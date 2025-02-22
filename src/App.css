@@ -1,38 +1,69 @@
 .App {
   text-align: center;
+  width: 100vw;
+  height: 100vh;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.Pictures {
+  margin: 10px;
+  position: absolute;
+  left: 0px;
+  width: 10%;
+  height: 100%;
+  border: 2px solid black;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+img{
+  margin: 5px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.Board{
+  width: 55%;
+  height: 75%;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid black;
+  padding: 10px;
+  display: grid;
+  background-image:
+        linear-gradient(to right, rgb(203 213 225) 4px, transparent 1px),
+        linear-gradient(to bottom, rgb(203 213 225) 4px, transparent 1px);
+  background-size: 20% 20%;
 }
 
-.App-link {
-  color: #61dafb;
+.info {
+  width: 40%;
+  height: 20%;
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-template-columns: 10rem 10rem 10rem;
+  grid-gap: 1rem;
+  grid-auto-flow: row;
+  border: 2px solid black;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.learnObj {
+  width: 20%;
+  height: 45%;
+  position: absolute;
+  right: 0px;
+  display: grid;
+  grid-template-columns: 10rem 10rem 10rem;
+  grid-gap: 1rem;
+  grid-auto-flow: row;
+  border: 2px solid black;
+}
+
+.calcs {
+  width: 20%;
+  height: 45%;
+  position: absolute;
+  top: 50%;
+  right: 0px;
+  display: grid;
+  grid-template-columns: 10rem 10rem 10rem;
+  grid-gap: 1rem;
+  grid-auto-flow: row;
+  border: 2px solid black;
 }
