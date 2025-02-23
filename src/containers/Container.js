@@ -1,6 +1,7 @@
 import update from 'immutability-helper'
 import { useCallback, useState } from 'react'
 import { useDrop } from 'react-dnd'
+
 import { DraggableBox } from '../components/DraggableBox.js'
 import { ItemTypes } from '../components/ItemTypes.js'
 import { snapToGrid as doSnapToGrid } from '../components/snapToGrid.js'
