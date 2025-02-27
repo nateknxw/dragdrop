@@ -1,5 +1,6 @@
 import React from 'react'
 import {boxes, setBoxes} from './Container'
+import {DoublyLinkedList} from '../components/GridList'
 
 //create a fucntion to work out how many spanning nodes in the circuit - i.e. how many summations equations will be required. 
 //will use general metyhod over inspection method as there will likely be a voltage source - can look into having both methods if time 
@@ -17,6 +18,13 @@ import {boxes, setBoxes} from './Container'
   
 //}
 function Calc () {
+
+  //get linked list from the ui here 
+  const listToMatrix = (DoublyLinkedList) => {
+    //convert the linked list into a matrix 
+  }
+
+  //use the matrix to complete the analysis 
   
   return (
     <div className='calcs'>

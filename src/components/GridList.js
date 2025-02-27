@@ -24,6 +24,8 @@ const DoublyLinkedList = () => {
     setHead(node);
   };
 
+  //work out how to fill out the linked list from what is on the grid here??
+
   return (
     <div>
       <h1>Doubly Linked List</h1>
