@@ -1,38 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-function Node({ prev, props, next }) {
+// Node component to represent each item in the linked list
+const Node = ({ data, next, prev }) => {
   return (
     <li>
-        {prev && <Node value={prev.value} next={prev.next} />}
-        {props}
-        {next && <Node value={next.value} next={next.next} />}
+      {prev && "<- "}
+      {data}
+      {next && " -> "}
+      {next && <Node data={next.data} next={next.next} prev={next.prev} />}
     </li>
   );
-}
+};
 
-function LinkedList() {
+const DoublyLinkedList = () => {
   const [head, setHead] = useState(null);
-  const [tail, setTail] = useState(null);
 
-  function addNode(value) {
-    const node = { value, next: null };
-    if (!head) {
-      setHead(node);
-      setTail(node);
-    } else {
-      tail.next = node;
-      setTail(node);
+  // Function to add a new node to the linked list
+  const addNode = (data) => {
+    const node = { data, next: head, prev: null };
+    if (head) {
+      head.prev = node;
     }
-  }
+    setHead(node);
+  };
 
   return (
     <div>
+      <h1>Doubly Linked List</h1>
       <ul>
-        {head && <Node value={head.value} next={head.next} />}
+        {head && <Node data={head.data} next={head.next} prev={head.prev} />}
       </ul>
-      <button onClick={() => addNode(Math.random())}>Add Node</button>
+      <button onClick={() => addNode("Node 1")}>Add Node 1</button>
+      <button onClick={() => addNode("Node 2")}>Add Node 2</button>
+      <button onClick={() => addNode("Node 3")}>Add Node 3</button>
     </div>
   );
-}
+};
 
-export default LinkedList;
+export default DoublyLinkedList;
