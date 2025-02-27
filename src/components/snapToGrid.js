@@ -1,6 +1,7 @@
 export function snapToGrid(x,y) {
-    const snappedX = Math.round(x / 32) * 32
-    const snappedY = Math.round(x/ 32) * 32
+    const gridWidth = 32
+    const snappedX = Math.round(x / gridWidth) * gridWidth
+    const snappedY = Math.round(y/ gridWidth) * gridWidth
     return [snappedX, snappedY]
 }
 
