@@ -1,6 +1,6 @@
 import { DndProvider } from "react-dnd";
 import{HTML5Backend} from 'react-dnd-html5-backend';
-import {render} from 'react-dom'
+
 //import DragDrop from "./components/OldFilesKeptForLogging/DragDrop";
 import Info from './containers/Info';
 import Learn from "./containers/Learn";
@@ -30,7 +30,6 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById('root')
-render(<App />, rootElement)
+
 
 export default App;

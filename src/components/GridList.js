@@ -1,42 +1,68 @@
-import React, { useState } from "react";
-
-// Node component to represent each item in the linked list
-const Node = ({ data, next, prev }) => {
-  return (
-    <li>
-      {prev && "<- "}
-      {data}
-      {next && " -> "}
-      {next && <Node data={next.data} next={next.next} prev={next.prev} />}
-    </li>
-  );
-};
-
-const DoublyLinkedList = () => {
-  const [head, setHead] = useState(null);
-
-  // Function to add a new node to the linked list
-  const addNode = (data) => {
-    const node = { data, next: head, prev: null };
-    if (head) {
-      head.prev = node;
+//temporary file for writing the calculations - will have something else to take data from ui to linked list then feed that to the calcs 
+class CircuitNode {
+    constructor(x, y, type, value) {
+      this.x = x;
+      this.y = y;
+      this.type = type || "wire"; // Default to "wire" if empty
+      this.value = value || 0;
+      this.up = null;
+      this.down = null;
+      this.left = null;
+      this.right = null;
     }
-    setHead(node);
+  }
+  
+  const buildLinkedListFromMatrix = (matrix) => {
+    const rows = matrix.length;
+    const cols = matrix[0].length;
+    let nodeMatrix = Array.from({ length: rows }, () => Array(cols).fill(null));
+
+  
+    let nodeList = []; // Store all nodes for easy access
+  
+    // Create nodes
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        let cell = matrix[i][j] || {};
+        let node = new CircuitNode(i,j, (cell.type || "wire").toLowerCase(), cell.value || 0);
+        
+        nodeMatrix[i][j] = node;
+        nodeList.push(node);
+
+        //check coords are right 
+        console.log(`🛠 Created node: (${i}, ${j}) Type: ${node.type} Value: ${node.value}`);
+      }
+    }
+  
+    // Link nodes
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        let node = nodeMatrix[i][j];
+        if (i > 0) node.up = nodeMatrix[i - 1][j];
+        if (i < rows - 1) node.down = nodeMatrix[i + 1][j];
+        if (j > 0) node.left = nodeMatrix[i][j - 1];
+        if (j < cols - 1) node.right = nodeMatrix[i][j + 1];
+      }
+    }
+
+    console.log("Node List before return: ", nodeList)
+  
+    return nodeList; // Return head node
   };
+  
+  // Dummy circuit matrix
+  const dummyMatrix = [
+    [{}, {}, { type: "resistor", value: 10 }, {}],
+    [{ type: "battery", value: 5 }, {}, {}, {}],
+    [{}, {}, {}, { type: "lightbulb", value: 15 }],
+    [{}, {}, {}, {}]
+  ];
+  
+  // Convert to linked list
+  const circuitLinkedList = buildLinkedListFromMatrix(dummyMatrix);
 
-  //work out how to fill out the linked list from what is on the grid here??
-
-  return (
-    <div>
-      <h1>Doubly Linked List</h1>
-      <ul>
-        {head && <Node data={head.data} next={head.next} prev={head.prev} />}
-      </ul>
-      <button onClick={() => addNode("Node 1")}>Add Node 1</button>
-      <button onClick={() => addNode("Node 2")}>Add Node 2</button>
-      <button onClick={() => addNode("Node 3")}>Add Node 3</button>
-    </div>
-  );
-};
-
-export default DoublyLinkedList;
+  console.log(circuitLinkedList);
+  
+  // Export linked list for testing
+  export default circuitLinkedList;
+  

@@ -7,15 +7,21 @@ import { ItemTypes } from '../components/ItemTypes.js'
 import { snapToGrid as doSnapToGrid } from '../components/snapToGrid.js'
 import '../App.css'
 
-import battery from '../assets/battery'
+import {battery} from '../assets/battery'
 import lightbulb from '../assets/lightbulb'
 import resistor from '../assets/resistor'
 
 
+
 export const Container = ({ snapToGrid }) => {
+  const batObj = {battery}
+  const batTop = batObj.battery.top
+  const batLeft = batObj.battery.left
+  const batTitle = batObj.battery.title
+  const batVolt = batObj.battery.voltage
   const [boxes, setBoxes] = useState({
-    a: { top: 20, left: -300, title: 'Battery', voltage: 15},
-    b: { top: 60, left: -300, title: 'Battery', voltage: 15},
+    a: {top :batTop, left: batLeft, title: batTitle, voltage: batVolt},
+    b: {top: 60, left: -300, title: 'Battery', voltage: 15},
     c: { top: 100, left: -300, title: 'Light-bulb', voltage: 10},
     d: { top: 140, left: -300, title: 'Light-bulb', voltage: 10},
     e: {top: 180, left:-300, title: 'Resistor', resistance: 3},
@@ -66,6 +72,6 @@ export const Container = ({ snapToGrid }) => {
         <DraggableBox key={key} id={key} {...boxes[key]} />
       ))}
     </div>
-    
+  
   )
 }
