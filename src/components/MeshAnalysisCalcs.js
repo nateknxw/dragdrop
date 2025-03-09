@@ -1,97 +1,74 @@
-import { create, all } from "mathjs";
-
-const math = create(all);
-
-export const MeshAnalysisCalcs = (nodeList) => {
-    if (!Array.isArray(nodeList) || nodeList.length === 0) {
-        console.error("❌ No nodes provided.");
-        return { error: "No nodes in the circuit" };
-    }
-
-    let meshes = [];
-    let voltageSources = [];
-    let resistanceMatrix = [];
-    
-    const findLoops = (node, path = [], visited = new Set()) => {
-        if (!node) return;
-
-        let nodeId = `${node.x},${node.y}`;
-        
-        if (visited.has(nodeId)) {
-            let loopStartIndex = path.findIndex(n => `${n.x},${n.y}` === nodeId);
-            if (loopStartIndex !== -1) {
-                let loop = path.slice(loopStartIndex);
-                if (loop.length > 2) {
-                    meshes.push(loop);
-                    let totalVoltage = loop.reduce((sum, n) => (n.type === "battery" ? sum + n.value : sum), 0);
-                    voltageSources.push(totalVoltage);
-                }
-            }
-            return;
-        }
-
-        visited.add(nodeId);
-        path.push(node);
-
-        for (let nextNode of [node.up, node.down, node.left, node.right]) {
-            if (nextNode) {
-                findLoops(nextNode, [...path], new Set(visited));
-            }
-        }
-    };
-
-    for (let node of nodeList) {
-        findLoops(node);
-    }
-
-    console.log("🔍 Found Meshes:", meshes);
-    console.log("🔍 Number of Meshes Found:", meshes.length);
-    console.log("🔍 Example Mesh:", meshes.slice(0, 5)); // Show only first 5
+import { create, all} from 'mathjs'
 
 
-    if (meshes.length === 0) {
-        return { error: "No valid circuit loops detected" };
-    }
+const math = create(all)
 
-    let meshCount = meshes.length;
-    resistanceMatrix = Array(meshCount).fill(0).map(() => Array(meshCount).fill(0));
-
-    for (let i = 0; i < meshCount; i++) {
-        let mesh = meshes[i];
-
-        let resistanceSum = 0;
-        for (let node of mesh) {
-            if (node.type === "resistor" || node.type === "lightbulb") {
-                resistanceSum += node.value;
-            }
-        }
-
-        resistanceMatrix[i][i] = resistanceSum;
-    }
-
-    console.log("🛠 Resistance Matrix:", resistanceMatrix);
-    console.log("⚡ Voltage Sources:", voltageSources);
-
-    // Check if the resistance matrix is singular
-    if (math.det(resistanceMatrix) === 0) {
-      console.error("❌ Circuit matrix is singular, cannot compute solution.");
-      return { error: "Circuit not solvable" };
-    }
-
+export const MeshAnalysisCalcs = (circuitMatrix) => {
     
 
-    let R = math.matrix(resistanceMatrix);
-    let V = math.matrix(voltageSources.map(v => [v]));
+  //Find Resistance Matrix 
+  const findResMatrix = () => {
+    let size = circuitMatrix.length;
+    let R = Array(size).fill(0).map(() => Array(size).fill(0));
 
-    // Proceed with matrix inversion if it's not singular
-    const inverseMatrix = math.inv(R); 
+    for (let i =0; i < size; i++){
+      for (let j = 0; j < size; j++){
+        const component = circuitMatrix[i][j];
+        if (component.type === 'resistor' || component.type === 'lightbulb') {
+          R[i][j] = component.value;
+        } else if (component.type === 'wire'){
+          R[i][j] = 0; //wire represents 0 resistance between meshes 
+        }
+      }
+    }
+    return R;
+  };
 
-    try {
-        let I = math.multiply(inverseMatrix, V)._data;
-        console.log("✅ Calculated Currents:", I);
-        return { currents: I, meshes, voltageSources };
-    } catch (error) {
-        console.error("❌ Matrix Error:", error);
-        return { error: "Circuit not solvable" };
+  //Find Voltage Matrix 
+  const findVoltMatrix = () => {
+    let size = circuitMatrix.length;
+    let V = Array(size).fill(0); //Fills matrix with 0s
+
+    for (let i =0; i < size; i++){
+      for(let j=0; j < size; j++){
+        const component = circuitMatrix[i][j];
+        if (component.type === 'battery') {
+          V[i] += component.value //Sums the voltage in each row 
+        }
+      }
+    }
+    return V;
+  };
+
+  //Solve circuit with Mesh analysis (nodal is not good for series circuits)
+  try {
+    const R = findResMatrix();
+    const V = findVoltMatrix();
+
+    //Log matrices for debugging 
+    console.log('Resistance matrix: ', R);
+    console.log('Voltage Matrix: ', V);
+
+    //Check if resMatrix is invertible 
+    const det = math.det(R);
+    console.log('Determinant of R: ', det);
+    
+    if (det === 0){
+      return "Error: Resistance matrix is singular (not solvable)";
+    }
+
+    //Check is the matrix dimensions match 
+    if (R.length !== V.length){
+      return "Error: Matrix dimensions do not match";
+    }
+
+    //Solve for mesh currents: I = R^-1 * V 
+    const I = math.multiply(math.inv(R), V);
+
+    //export result as array
+    return I;
+
+    }catch (error){
+     return"Error: Circuit not solvable or data invalid";
     }
 };
