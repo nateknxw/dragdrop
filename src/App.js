@@ -19,7 +19,7 @@ function App() {
         <Calc/>
        
         <CustomDragLayer />
-        <Container />
+        <Container snapToGrid={true}/>
         <Info/>
         
         
