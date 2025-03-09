@@ -23,19 +23,12 @@ export const Container = ({ snapToGrid }) => {
     a: {top :batTop, left: batLeft, title: batTitle, voltage: batVolt},
     b: {top: 60, left: -300, title: 'Battery', voltage: 15},
     c: { top: 100, left: -300, title: 'Light-bulb', voltage: 10},
-    d: { top: 140, left: -300, title: 'Light-bulb', voltage: 10},
-    e: {top: 180, left:-300, title: 'Resistor', resistance: 3},
-    f: {top: 220, left: -300, title: 'Wire', current: 5},
-    g: {top: 260, left: -300, title: 'Wire', current: 5},
-    h: {top: 300, left: -300, title: 'Wire', current: 5},
-    i: {top: 340, left: -300, title: 'Wire', current: 5},
-    j: {top: 380, left: -300, title: 'Wire', current: 5},
-    k: {top: 420, left: -300, title: 'Wire', current: 5},
-    l: {top: 460, left: -300, title: 'Wire', current: 5},
-    m: {top: 500, left: -300, title: 'Wire', current: 5},
-    n: {top: 540, left: -300, title: 'Wire', current: 5},
-    o: {top: 580, left: -300, title: 'Wire', current: 5},
-    p: {top: 620, left: -300, title: 'Wire', current: 5},
+    d: { top: 100, left: -300, title: 'Light-bulb', voltage: 10},
+    e: {top: 140, left:-300, title: 'Resistor', resistance: 3},
+    f: {top: 140, left:-300, title: 'Resistor', resistance: 3},
+    g: {top: 140, left:-300, title: 'Resistor', resistance: 3},
+    h: {top: 140, left:-300, title: 'Resistor', resistance: 3},
+    
   })
   const moveBox = useCallback(
     (id, left, top) => {
