@@ -7,27 +7,16 @@ import { ItemTypes } from '../components/ItemTypes.js'
 import { snapToGrid as doSnapToGrid } from '../components/snapToGrid.js'
 import '../App.css'
 
-import {battery} from '../assets/battery'
-import lightbulb from '../assets/lightbulb'
-import resistor from '../assets/resistor'
+import {Battery, Resistor, Lightbulb} from '../assets/ComponentBase'
 
 
 
 export const Container = ({ snapToGrid }) => {
-  const batObj = {battery}
-  const batTop = batObj.battery.top
-  const batLeft = batObj.battery.left
-  const batTitle = batObj.battery.title
-  const batVolt = batObj.battery.voltage
+  
   const [boxes, setBoxes] = useState({
-    a: {top :batTop, left: batLeft, title: batTitle, voltage: batVolt},
-    b: {top: 60, left: -300, title: 'Battery', voltage: 15},
-    c: { top: 100, left: -300, title: 'Light-bulb', voltage: 10},
-    d: { top: 100, left: -300, title: 'Light-bulb', voltage: 10},
-    e: {top: 140, left:-300, title: 'Resistor', resistance: 3},
-    f: {top: 140, left:-300, title: 'Resistor', resistance: 3},
-    g: {top: 140, left:-300, title: 'Resistor', resistance: 3},
-    h: {top: 140, left:-300, title: 'Resistor', resistance: 3},
+    a: new Battery(60, -300, 15),
+    b: new Lightbulb(100, -300, 10),
+    c: new Resistor(140, -300, 5)
     
   })
   const moveBox = useCallback(
@@ -58,6 +47,27 @@ export const Container = ({ snapToGrid }) => {
     }),
     [moveBox],
   )
+
+  const connectBox = (first, second ) => {
+    
+    for (let i =0; i < boxes.length; i++){
+      let box = boxes[i];
+      if (box.prevId === first){
+        box.prev = [second];
+      }
+      if(box.prevId === second){
+        box.prev = [first];
+      }
+      if(box.nextId === first){
+        box.next = [second];
+      }
+      if(box.nextId === second){
+        box.next = [first];
+      }
+    }
+  }
+
+  connectBox(3,4)
   return (
    
     <div ref={drop} className="Board">
