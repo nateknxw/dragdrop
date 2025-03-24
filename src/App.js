@@ -8,18 +8,28 @@ import Calc from './containers/Calc';
 
 import { CustomDragLayer } from "./components/CustomDragLayer";
 import { Container } from "./containers/Container";
+import React, { useState } from "react";
 //import Picture from "./components/OldFilesKeptForLogging/Picture";
 
 
 function App() {
+
+  const [circuitLinkedList, setCircuitLinkedList] = useState([]);
+
+  // Function to update circuit state
+  const handleCircuitUpdate = (newCircuit) => {
+    console.log("Updating circuit:", newCircuit);
+    setCircuitLinkedList(newCircuit);
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="App">
         <Learn/>
-        <Calc/>
+        <Calc  circuitLinkedList={circuitLinkedList} />
        
         <CustomDragLayer />
-        <Container snapToGrid={true}/>
+        <Container circuitLinkedList={circuitLinkedList} snapToGrid={true} onCircuitUpdate = {handleCircuitUpdate}/>
         <Info/>
         
         

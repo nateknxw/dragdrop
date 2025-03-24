@@ -1,5 +1,5 @@
 import update from 'immutability-helper'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDrop } from 'react-dnd'
 
 import { DraggableBox } from '../components/DraggableBox.js'
@@ -11,17 +11,36 @@ import {Battery, Resistor, Lightbulb} from '../assets/ComponentBase'
 
 
 
-export const Container = ({ snapToGrid }) => {
+export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => {
   const [boxes, setBoxes] = useState({
     a: new Battery(60, -300, 15),
     b: new Lightbulb(100, -300, 10),
-    c: new Resistor(140, -300, 5)
+    c: new Resistor(140, -300, 5),
+    d: new Resistor(140, -300, 5),
+    e: new Resistor(140, -300, 5),
+    
     
   });
+
+  
 
   const [selectedBox, setSelectedBox] = useState(null); //Track selected box 
   const [connections, setConnections] = useState([]); // Stores connections between boxes
 
+  
+
+
+
+  // Updates circuit when changes occur
+  useEffect(() => {
+    if (circuitLinkedList.length > 0) {
+      onCircuitUpdate(circuitLinkedList);
+    }
+  }, [circuitLinkedList, onCircuitUpdate]);
+
+  
+
+  //Move box on drag
   const moveBox = useCallback(
     (id, left, top) => {
       if (!boxes) {return}; 
@@ -35,61 +54,58 @@ export const Container = ({ snapToGrid }) => {
     [boxes],
   )
 
+  //Connect boxes and update state 
+  const connectBox = useCallback(
+    (first, second) => {
+      setConnections((prevConnections) => {
+        //  Check if connection already exists to avoid unnecessary state updates
+        if (prevConnections.some(conn => 
+          (conn.from === first && conn.to === second) || 
+          (conn.from === second && conn.to === first))
+        ) {
+          console.warn(` Connection already exists: ${first} -> ${second}`);
+          return prevConnections; // Prevent unnecessary re-render
+        }
+  
+        console.log(` Added connection: ${first} -> ${second}`);
+        return [...prevConnections, { from: first, to: second }];
+      });
+  
+      setBoxes((prevBoxes) => {
+        if (!prevBoxes[first] || !prevBoxes[second]) return prevBoxes; //  Prevent undefined errors
+  
+        console.log("🔄 Updating Boxes:", first, second);
+
+        const updatedBoxes = {
+          ...prevBoxes,
+          [first]: { ...prevBoxes[first], nextId: second },
+          [second]: { ...prevBoxes[second], prevId: first },
+        };
+
+        // Call handleCircuitUpdate to update circuit state
+        onCircuitUpdate(updatedBoxes);
+
+        return updatedBoxes;
+      });
+    },
+    [setBoxes, setConnections] //  Correct dependencies
+  );
+  
+  
+  //Handles the box selection and connections 
   const handleConnect = useCallback(
     (id) => {
       if (!selectedBox) {
         setSelectedBox(id);
       } else {
-        if (selectedBox === id) {
-          console.warn("Cannot connect a box to itself:", id);
-          return; // 🚨 Prevent self-connection
+        if (selectedBox !== id) { //  Ensure different boxes
+          connectBox(selectedBox, id);
         }
-        
-        if (connections.some(conn => (conn.from === selectedBox && conn.to === id) || (conn.from === id && conn.to === selectedBox))) {
-          console.warn("Connection already exists:", selectedBox, "->", id);
-          return; // 🚨 Prevent duplicate connections
-        }
-  
-        connectBox(selectedBox, id);
-        setSelectedBox(null); // Reset selection after connection
+        setSelectedBox(null);
       }
     },
-    [selectedBox, connections]
+    [selectedBox, connectBox] //  Include `connectBox` as dependency
   );
-
-  const connectBox = useCallback((first, second) => {
-    setBoxes((prevBoxes) => {
-      //console.log("Previous Boxes:", prevBoxes);
-      //console.log("Connecting:", first, second);
-
-      if (prevBoxes[first]?.nextId || prevBoxes[second]?.prevId) {
-        console.warn("Boxes are already connected.");
-        return prevBoxes;
-      }
-
-      return update(prevBoxes, {
-        [first]: { nextId: { $set: second } },
-        [second]: { prevId: { $set: first } },
-      });
-    });
-  
-    setConnections((prevConnections) => {
-      const exists = prevConnections.some(
-        (conn) =>
-          (conn.from === first && conn.to === second) ||
-          (conn.from === second && conn.to === first)
-      );
-      if (exists) {
-        console.warn(`Connection already exists: ${first} -> ${second}`);
-        return prevConnections;
-      }
-      return [...prevConnections, { from: first, to: second }];
-    });
-      
-    },
-    [setBoxes, setConnections] // ✅ Dependencies added
-  );
-  
 
 
 
@@ -107,9 +123,11 @@ export const Container = ({ snapToGrid }) => {
         return undefined
       },
     }),
-    [moveBox, snapToGrid],
+    [moveBox],
   )
 
+
+  
   
 
   return (
@@ -120,15 +138,14 @@ export const Container = ({ snapToGrid }) => {
           const fromBox = boxes[from];
           const toBox = boxes[to];
 
-          if (!fromBox || !toBox || fromBox.left === undefined || toBox.left === undefined) {
-            console.warn(`Skipping connection: ${from} -> ${to} due to missing position`);
-            return null;
-          }
+          if (!fromBox || !toBox) return null;
 
-          const x1 = fromBox.left + 50; // Adjust for center
+          console.log(`Drawing line: ${from} → ${to}`);
+
+          const x1 = fromBox.left + 500; // Adjust for center
           const y1 = fromBox.top + 25;
-          const x2 = toBox.left + 50;
-          const y2 = toBox.top + 25;
+          const x2 = toBox.left + 500;
+          const y2 = toBox.top + 50;
 
           return (
             <line
@@ -137,7 +154,7 @@ export const Container = ({ snapToGrid }) => {
               y1={y1}
               x2={x2}
               y2={y2}
-              stroke="black"
+              stroke="red"
               strokeWidth="2"
             />
           );
@@ -146,8 +163,35 @@ export const Container = ({ snapToGrid }) => {
 
       {/* Render draggable boxes */}
       {Object.keys(boxes).map((key) => (
-        <DraggableBox key={key} id={key} {...boxes[key]} onConnect = { (id) => handleConnect(id)} />
+        <DraggableBox 
+          key={key} 
+          id={key} 
+          {...boxes[key]} 
+          onConnect = {handleConnect} 
+        />
       ))}
     </div>
   );
+}
+
+// Function to convert the circuit stored in a linked list format to a matrix
+function convertCircuitToMatrix(boxes, connections) {
+  const keys = Object.keys(boxes);
+  const size = keys.length;
+  const matrix = Array(size).fill(null).map(() => Array(size).fill(null));
+
+  connections.forEach(({ from, to }) => {
+    const i = keys.indexOf(from);
+    const j = keys.indexOf(to);
+
+    if (i !== -1 && j !== -1) {
+      const component = boxes[from];
+      matrix[i][j] = {
+        type: component.constructor.name.toLowerCase(),
+        value: component.resistance || component.voltage || 0,
+      };
+    }
+  });
+
+  return matrix;
 }

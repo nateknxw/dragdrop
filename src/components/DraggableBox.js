@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from 'react'
 import { useDrag } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'
-import { connect } from 'socket.io-client'
+
 import { Box } from './Box.js'
 import { ItemTypes } from './ItemTypes.js'
 
@@ -20,9 +20,7 @@ function getStyles(left, top, isDragging) {
   }
 }
 export const DraggableBox = memo(function DraggableBox(props) {
-  
-  const { id, title, left, top, onConnect } = props
-  
+  const { id, title, left, top, onConnect } = props; // ✅ Ensure onConnect is received
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: ItemTypes.BOX,
@@ -38,6 +36,7 @@ export const DraggableBox = memo(function DraggableBox(props) {
     preview(getEmptyImage(), { captureDraggingState: true })
   }, []);
 
+  //tested if the connect buttons worked 
   const handleConnectClick = () => {
     if (typeof onConnect === 'function') {
       onConnect(id)
@@ -54,9 +53,9 @@ export const DraggableBox = memo(function DraggableBox(props) {
       style={getStyles(left, top, isDragging)}
       role="DraggableBox"
     >
-      <button onClick={handleConnectClick}> ◀️ </button>
+      <button onClick={() => onConnect(id)}> ◀️ </button>
       <Box title={title} />
-      <button onClick={handleConnectClick}> ▶️ </button>
+      <button onClick={() => onConnect(id)}> ▶️ </button>
 
       
     </div>

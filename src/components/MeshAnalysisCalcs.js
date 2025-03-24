@@ -1,74 +1,62 @@
-import { create, all} from 'mathjs'
+import { create, all } from 'mathjs';
 
-
-const math = create(all)
+const math = create(all);
 
 export const MeshAnalysisCalcs = (circuitMatrix) => {
-    
 
-  //Find Resistance Matrix 
-  const findResMatrix = () => {
-    let size = circuitMatrix.length;
-    let R = Array(size).fill(0).map(() => Array(size).fill(0));
+  console.table(circuitMatrix);
 
-    for (let i =0; i < size; i++){
-      for (let j = 0; j < size; j++){
-        const component = circuitMatrix[i][j];
-        if (component.type === 'resistor' || component.type === 'lightbulb') {
-          R[i][j] = component.value;
-        } else if (component.type === 'wire'){
-          R[i][j] = 0; //wire represents 0 resistance between meshes 
+  const size = circuitMatrix.length;
+
+  // Initialize resistance matrix (R) and voltage matrix (V)
+  let R = Array(size).fill(0).map(() => Array(size).fill(0));
+  let V = Array(size).fill(0);
+
+  // 🔥 Loop through all loops (meshes)
+  for (let i = 0; i < size; i++) {
+    let loopRes = 0; // Sum of all resistances in the loop
+
+    for (let j = 0; j < size; j++) {
+      const component = circuitMatrix[i][j];
+
+      if (component) {
+        const title = component.title.toLowerCase(); // Convert to lowercase for consistency
+
+        if (title === "resistor" || title === "lightbulb") {
+          loopRes += component.value; // Add resistance
+
+          // Off-diagonal elements represent mutual resistance (shared with another loop)
+          if (i !== j) R[i][j] -= component.value;
+        } 
+        
+        else if (title === "battery") {
+          V[i] += component.value; // Add battery voltage to the mesh
         }
       }
     }
-    return R;
-  };
 
-  //Find Voltage Matrix 
-  const findVoltMatrix = () => {
-    let size = circuitMatrix.length;
-    let V = Array(size).fill(0); //Fills matrix with 0s
+    // Set the diagonal element: total resistance in this loop
+    R[i][i] = loopRes;
+  }
 
-    for (let i =0; i < size; i++){
-      for(let j=0; j < size; j++){
-        const component = circuitMatrix[i][j];
-        if (component.type === 'battery') {
-          V[i] += component.value //Sums the voltage in each row 
-        }
-      }
-    }
-    return V;
-  };
-
-  //Solve circuit with Mesh analysis (nodal is not good for series circuits)
+  // ✅ Check if the resistance matrix is singular
   try {
-    const R = findResMatrix();
-    const V = findVoltMatrix();
-
-    //Log matrices for debugging 
-    console.log('Resistance matrix: ', R);
-    console.log('Voltage Matrix: ', V);
-
-    //Check if resMatrix is invertible 
     const det = math.det(R);
-    console.log('Determinant of R: ', det);
-    
-    if (det === 0){
+    if (det === 0) {
+      console.error("⚠️ Error: Resistance matrix is singular (not solvable)");
       return "Error: Resistance matrix is singular (not solvable)";
     }
 
-    //Check is the matrix dimensions match 
-    if (R.length !== V.length){
-      return "Error: Matrix dimensions do not match";
-    }
-
-    //Solve for mesh currents: I = R^-1 * V 
+    // ✅ Solve for currents: I = R⁻¹ * V
     const I = math.multiply(math.inv(R), V);
-
-    //export result as array
+    
+    console.log("🔍 Resistance Matrix (R):", R);
+    console.log("🔍 Voltage Vector (V):", V);
+    console.log("✅ Mesh Currents (I):", I);
+    
     return I;
-
-    }catch (error){
-     return"Error: Circuit not solvable or data invalid";
-    }
+  } catch (error) {
+    console.error("⚠️ Error in matrix calculations:", error);
+    return "Error: Circuit not solvable or data invalid";
+  }
 };
