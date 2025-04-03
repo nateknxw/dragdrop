@@ -12,7 +12,7 @@ export const MeshAnalysisCalcs = (circuitMatrix) => {
   let R = Array(size).fill(0).map(() => Array(size).fill(0));
   let V = Array(size).fill(0);
 
-  // 🔥 Loop through all loops (meshes)
+  // Loop through all loops (meshes)
   for (let i = 0; i < size; i++) {
     let loopRes = 0; // Sum of all resistances in the loop
 
@@ -43,8 +43,12 @@ export const MeshAnalysisCalcs = (circuitMatrix) => {
   try {
     const det = math.det(R);
     if (det === 0) {
-      console.error("⚠️ Error: Resistance matrix is singular (not solvable)");
-      return "Error: Resistance matrix is singular (not solvable)";
+      //console.error("⚠️ Error: Resistance matrix is singular (not solvable)");
+      //return "Error: Resistance matrix is singular (not solvable)";
+      
+      //Circuit is most likely series in this instances so can use Ohm's law easily 
+      const Iseries = math.divide(V, R)
+      return Iseries
     }
 
     // ✅ Solve for currents: I = R⁻¹ * V
