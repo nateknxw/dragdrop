@@ -49,7 +49,7 @@ function Info () {
 
   return (
     <div className='info'>
-      //onload={neutralHandler}
+      
       <button onClick={batteryHandler} className='battBut'> Battery</button>
       <button onClick={lightbulbHandler} className='lightBut'> Lightbulb </button>
       <button onClick={resistorHandler} className='resBut'> Resistor</button>

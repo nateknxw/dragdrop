@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect } from 'react'
 import { useDrag } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 
@@ -20,7 +20,8 @@ function getStyles(left, top, isDragging) {
   }
 }
 export const DraggableBox = memo(function DraggableBox(props) {
-  const { id, title, left, top, onConnect } = props; // ✅ Ensure onConnect is received
+  const { id, title, left, top, onConnect } = props; //  Ensure onConnect is received
+  
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: ItemTypes.BOX,
@@ -49,7 +50,8 @@ export const DraggableBox = memo(function DraggableBox(props) {
 
   return (
     <div
-      ref={drag}
+      ref={drag} 
+      
       style={getStyles(left, top, isDragging)}
       role="DraggableBox"
     >

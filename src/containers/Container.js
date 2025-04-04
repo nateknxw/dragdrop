@@ -1,5 +1,5 @@
 import update from 'immutability-helper'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDrop } from 'react-dnd'
 
 import { DraggableBox } from '../components/DraggableBox.js'
@@ -21,6 +21,8 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
     
     
   });
+
+  const boxRefs = useRef({}); //Create a refobject to store box refs 
 
   
 
@@ -132,6 +134,17 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
 
   return (
     <div ref={drop} className="Board">
+      <defs>
+        <marker
+          id="arrow"
+          markerWidth="10"
+          markerHeight="10"
+          refX="10"   // Arrow tip position
+          refY="5"
+          orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="red" />
+        </marker>
+      </defs>
       {/* SVG layer for rendering connections */}
       <svg className="connection-layer">
         {connections.map(({ from, to }, index) => {
@@ -142,20 +155,32 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
 
           console.log(`Drawing line: ${from} → ${to}`);
 
-          const x1 = fromBox.left + 500; // Adjust for center
-          const y1 = fromBox.top + 25;
-          const x2 = toBox.left + 500;
-          const y2 = toBox.top + 50;
+          // Ensure we correctly calculate dimensions from `getBoundingClientRect`
+          const fromRect = document.getElementById(`box-${from}`).getBoundingClientRect();
+          const toRect = document.getElementById(`box-${to}`).getBoundingClientRect();
+
+          const fromX = fromRect.left + (fromRect.width / 2); // Middle of the left or right side
+          const fromY = fromRect.top + fromRect.height / 2;  // Vertical center
+      
+          const toX = toRect.left + (toRect.width / 2); // Middle of the left or right side
+          const toY = toRect.top + toRect.height / 2;   // Vertical center
+
+          // Ensure the calculation of positions is correct (no NaN)
+          if (isNaN(fromX) || isNaN(fromY) || isNaN(toX) || isNaN(toY)) {
+            console.error("Invalid connection coordinates:", { fromX, fromY, toX, toY });
+            return null; // Skip this connection if invalid
+          }
 
           return (
             <line
               key={index}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
+              x1={fromX}
+              y1={fromY}
+              x2={toX}
+              y2={toY}
               stroke="red"
               strokeWidth="2"
+              markerEnd='url(#arrow)' //Use an arrow head to show current direction better?
             />
           );
         })}

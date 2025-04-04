@@ -27,8 +27,13 @@ function getItemStyles(initialOffset, currentOffset, isSnapToGrid) {
   }
   const transform = `translate(${x}px, ${y}px)`
   return {
+    position: 'fixed',
+    pointerEvents: 'none',
+    top: 0,
+    left: 0,
     transform,
     WebkitTransform: transform,
+    zIndex: 100,
   }
 }
 export const CustomDragLayer = (props) => {
@@ -37,7 +42,7 @@ export const CustomDragLayer = (props) => {
       item: monitor.getItem(),
       itemType: monitor.getItemType(),
       initialOffset: monitor.getInitialSourceClientOffset(),
-      currentOffset: monitor.getSourceClientOffset(),
+      currentOffset: monitor.getClientOffset(),
       isDragging: monitor.isDragging(),
     }))
   function renderItem() {
