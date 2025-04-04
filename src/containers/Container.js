@@ -169,7 +169,7 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
               x2={toX}
               y2={toY}
               stroke="red"
-              strokeWidth="2"
+              strokeWidth="2.5"
               markerEnd='url(#arrowhead)' //Attach arrow to end of line
             />
           );

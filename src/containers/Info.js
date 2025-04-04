@@ -1,95 +1,48 @@
 import React, { useState } from 'react'
 import '../App.css'
-//import Button from '../components/OldFilesKeptForLogging/Button'
 
 function Info () {
-  const [neutral, setNeutral] = useState(0);
-  const [battery, setBattery] = useState(1);
-  const [lightbulb, setLightbulb] = useState(2);
-  const [resistor, setResistor] = useState(3);
-  const [wire, setWire] = useState(4);
-
-  const neutralHandler = () => {
-    setNeutral(true);
-    setBattery(false);
-    setLightbulb(false);
-    setResistor(false);
-    setWire(false);
-  };
-  const batteryHandler = () => {
-    setNeutral(false);
-    setBattery(true);
-    setLightbulb(false);
-    setResistor(false);
-    setWire(false);
-  };
-  const lightbulbHandler = () => {
-    setNeutral(false);
-    setBattery(false);
-    setLightbulb(true);
-    setResistor(false);
-    setWire(false);
-  };
-
-  const resistorHandler = () => {
-    setNeutral(false);
-    setBattery(false);
-    setLightbulb(false);
-    setResistor(true);
-    setWire(false);
-  };
-
-  const wireHandler = () => {
-    setNeutral(false);
-    setBattery(false);
-    setLightbulb(false);
-    setResistor(false);
-    setWire(true);
-  };
+  const [selected, setSelected] = useState('neutral'); // default is neutral
 
   return (
     <div className='info'>
-      
-      <button onClick={batteryHandler} className='battBut'> Battery</button>
-      <button onClick={lightbulbHandler} className='lightBut'> Lightbulb </button>
-      <button onClick={resistorHandler} className='resBut'> Resistor</button>
-      <button onClick={wireHandler} className='wireBut'> Wire</button>
+      <button onClick={() => setSelected('battery')} className='battBut'> Battery</button>
+      <button onClick={() => setSelected('lightbulb')} className='lightBut'> Lightbulb </button>
+      <button onClick={() => setSelected('resistor')} className='resBut'> Resistor</button>
+      <button onClick={() => setSelected('wire')} className='wireBut'> Wire</button>
+
       <div className='explanation'>
-        {neutral && (
+        {selected === 'neutral' && (
           <p className='explain'>
-            Press button for information on each component
+            This circuit flows as a direct current, this means the current flows in only one direction, the direction is shown when you connect the circuit with the arrrows.
+            Press the buttons for information on each component.
           </p>
         )}
-        {battery && (
+        {selected === 'battery' && (
           <p className='expain'>
-            This is a battery.
-            Batteries provide the cirucit with electricity. 
+            This is a battery. Batteries provide the circuit with electricity. It is made up of cells that convert chemical energy into electrical energy. 
+            Generally they hold small amounts of energy but rechargable batteries are becoming more and more common, like the ones in mobile phones or laptops and even in cars. 
+          </p>
+          
+        )}
+        {selected === 'lightbulb' && (
+          <p className='expain'>
+            This is a lightbulb. The electrical current heats the filament (thin high resistance wire that glows when it gets hot) in the bulb so that it gives out light.
           </p>
         )}
-        {lightbulb && (
+        {selected === 'resistor' && (
           <p className='expain'>
-            This is a lightbulb.
+            This is a resistor. It limits the flow of electrical current, the resistor used here is a fixed resistor which means the resistance does not change.
           </p>
         )}
-        {resistor && (
+        {selected === 'wire' && (
           <p className='expain'>
-            This is a resistor.
-          </p>
-        )}
-        {wire && (
-          <p className='expain'>
-            This is a wire.
+            This is a wire. It is used to transmit electricity from the power source (battery in this circuit) to the other components in the circuit (the lightbulb and resistors here).
           </p>
         )}
       </div>
-      
-
     </div>
-
-    
-  )
-
-  
-
+  );
 }
-export default Info
+
+export default Info;
