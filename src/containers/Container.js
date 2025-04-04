@@ -127,10 +127,24 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
   
 
   return (
-    <div ref={drop} className="Board">
-      
+    <div ref={drop} className="Board">      
       {/* SVG layer for rendering connections */}
       <svg className="connection-layer">
+        {/* Define arrowhead */}
+        <defs>
+          <marker
+          id = 'arrowhead'
+          viewBox='0 0 10 10'
+          refX='20'
+          refY='5'
+          markerWidth='15'
+          markerHeight='15'
+          orient='auto'
+          >
+            <polygon points='0,0 10,5 0, 10' fill='red' />
+          </marker>
+        </defs>
+
         {connections.map(({ from, to }, index) => {
           const fromBox = boxes[from];
           const toBox = boxes[to];
@@ -156,7 +170,7 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
               y2={toY}
               stroke="red"
               strokeWidth="2"
-              
+              markerEnd='url(#arrowhead)' //Attach arrow to end of line
             />
           );
         })}
