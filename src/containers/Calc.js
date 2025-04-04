@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MeshAnalysisCalcs } from "../components/linkedListMeshCalcs";
+import { MeshAnalysisCalcs } from "../components/MeshAnalysisCalcs";
 import { NodalAnalysisCalcs } from "../components/NodalAnalysisCalcs";
 
 
@@ -10,7 +10,7 @@ const convertCircuitToMatrix = (circuit) => {
   let loops = [];
   let visited = new Set();
 
-  // 🔄 Function to detect loops in the circuit
+  // Function to detect loops in the circuit
   const findLoop = (start, path = [], current = start) => {
     if (path.includes(current) && path[0] === current) {
       loops.push([...path]); // Store full loop
@@ -33,22 +33,22 @@ const convertCircuitToMatrix = (circuit) => {
     }
   };
 
-  // 🔄 Find all loops
+  // Find all loops
   Object.keys(circuit).forEach((key) => {
     if (!visited.has(key)) {
       findLoop(key);
     }
   });
 
-  console.log("🔁 Detected loops:", loops);
+  console.log(" Detected loops:", loops);
 
-  // 🟢 Initialize square matrix with 0s
+  // Initialize square matrix with 0s
   let matrixSize = loops.length;
   let matrix = Array.from({ length: matrixSize }, () =>
     Array(matrixSize).fill(0)
   );
 
-  // 🔢 Populate the matrix
+  // Populate the matrix
   loops.forEach((loop, i) => {
     loop.forEach((node, j) => {
       let resistance = circuit[node]?.resistance || 0;
@@ -65,7 +65,7 @@ const convertCircuitToMatrix = (circuit) => {
     });
   });
 
-  console.log("✅ Mesh Analysis Matrix:", matrix);
+  console.log("Mesh Analysis Matrix:", matrix);
   return matrix;
 };
 

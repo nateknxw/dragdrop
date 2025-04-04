@@ -39,7 +39,7 @@ export const MeshAnalysisCalcs = (circuitMatrix) => {
     R[i][i] = loopRes;
   }
 
-  // ✅ Check if the resistance matrix is singular
+  //  Check if the resistance matrix is singular
   try {
     const det = math.det(R);
     if (det === 0) {
@@ -51,16 +51,16 @@ export const MeshAnalysisCalcs = (circuitMatrix) => {
       return Iseries
     }
 
-    // ✅ Solve for currents: I = R⁻¹ * V
+    //  Solve for currents: I = R⁻¹ * V
     const I = math.multiply(math.inv(R), V);
     
-    console.log("🔍 Resistance Matrix (R):", R);
-    console.log("🔍 Voltage Vector (V):", V);
-    console.log("✅ Mesh Currents (I):", I);
+    console.log(" Resistance Matrix (R):", R);
+    console.log(" Voltage Vector (V):", V);
+    console.log("Mesh Currents (I):", I);
     
     return I;
   } catch (error) {
-    console.error("⚠️ Error in matrix calculations:", error);
+    console.error(" Error in matrix calculations:", error);
     return "Error: Circuit not solvable or data invalid";
   }
 };
