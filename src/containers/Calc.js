@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MeshAnalysisCalcs } from "../components/MeshAnalysisCalcs";
 import { NodalAnalysisCalcs } from "../components/NodalAnalysisCalcs";
 
-
+import { parseCircuit, meshAnalysis } from "../components/meshCircuitAnalysisV3";
 
 const convertCircuitToMatrix = (circuit) => {
   console.log(" Converting circuit to mesh matrix...");
@@ -69,18 +69,15 @@ const convertCircuitToMatrix = (circuit) => {
   return matrix;
 };
 
+
+
+
+
 const Calc = ({ circuitLinkedList }) => {
   const [result, setResult] = useState(null);
+  const [analysisResults, setAnalysisResults] = useState(null);
   
 
-  /**useEffect(() => {
-    if (circuitLinkedList) {
-        const convertedMatrix = convertCircuitToMatrix(circuitLinkedList);
-        setMatrix(convertedMatrix);
-        console.log("Updated Circuit Matrix:", convertedMatrix);
-    }
-  }, [circuitLinkedList]);
-  */
 
   const handleCalculate = () => {
     console.log(" Calculate button clicked!");
@@ -90,16 +87,23 @@ const Calc = ({ circuitLinkedList }) => {
     return;
     }
 
+    //Latest attempt at the mesh analysis 
+    const loop = parseCircuit(circuitLinkedList);
+    console.log("Loop: ", loop);
+    const analysisResults = meshAnalysis(loop);
+    setAnalysisResults(analysisResults);
+    console.log("New mesh analysis results: ", analysisResults)
+
     const circuitMatrix = convertCircuitToMatrix(circuitLinkedList);
     console.log(" Updated Circuit Matrix:", circuitMatrix);
 
-    const meshResult = MeshAnalysisCalcs(circuitMatrix);
-    console.log("Mesh Result:", meshResult);
+    //const meshResult = MeshAnalysisCalcs(circuitMatrix);
+    //console.log("Mesh Result:", meshResult);
 
     const nodalResult = NodalAnalysisCalcs(circuitMatrix);
     console.log("Nodal Result:", nodalResult);
 
-    setResult({ meshResult, nodalResult });
+    setResult({ nodalResult });
   };
 
   return (
@@ -108,10 +112,16 @@ const Calc = ({ circuitLinkedList }) => {
       <button onClick= {handleCalculate}
         className="calcButton">Calculate</button>
       
-      {result && (
+      {result &&  analysisResults && (
         <>
             <h3>Mesh Analysis Result</h3>
-            <pre>{JSON.stringify(result.meshResult, null, 2)}</pre>
+            {/*<pre>{JSON.stringify(result.meshResult, null, 2)}</pre> */}
+
+            
+            <p><strong>Total Resistance:</strong> {analysisResults.totalResistance} Ω</p>
+            <p><strong>Total Voltage:</strong> {analysisResults.totalVoltage} V</p>
+            <p><strong>Current:</strong> {analysisResults.current} A</p>
+
             <h3>Nodal Analysis Result</h3>
             <pre>{JSON.stringify(result.nodalResult, null, 2)}</pre>
         </>
