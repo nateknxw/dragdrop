@@ -22,15 +22,9 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
     
   });
 
-  const boxRefs = useRef({}); //Create a refobject to store box refs 
-
-  
 
   const [selectedBox, setSelectedBox] = useState(null); //Track selected box 
   const [connections, setConnections] = useState([]); // Stores connections between boxes
-
-  
-
 
 
   // Updates circuit when changes occur
@@ -76,7 +70,7 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
       setBoxes((prevBoxes) => {
         if (!prevBoxes[first] || !prevBoxes[second]) return prevBoxes; //  Prevent undefined errors
   
-        console.log("🔄 Updating Boxes:", first, second);
+        console.log(" Updating Boxes:", first, second);
 
         const updatedBoxes = {
           ...prevBoxes,
@@ -134,17 +128,7 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
 
   return (
     <div ref={drop} className="Board">
-      <defs>
-        <marker
-          id="arrow"
-          markerWidth="10"
-          markerHeight="10"
-          refX="10"   // Arrow tip position
-          refY="5"
-          orient="auto">
-          <path d="M0,0 L10,5 L0,10 Z" fill="red" />
-        </marker>
-      </defs>
+      
       {/* SVG layer for rendering connections */}
       <svg className="connection-layer">
         {connections.map(({ from, to }, index) => {
@@ -155,21 +139,13 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
 
           console.log(`Drawing line: ${from} → ${to}`);
 
-          // Ensure we correctly calculate dimensions from `getBoundingClientRect`
-          const fromRect = document.getElementById(`box-${from}`).getBoundingClientRect();
-          const toRect = document.getElementById(`box-${to}`).getBoundingClientRect();
-
-          const fromX = fromRect.left + (fromRect.width / 2); // Middle of the left or right side
-          const fromY = fromRect.top + fromRect.height / 2;  // Vertical center
-      
-          const toX = toRect.left + (toRect.width / 2); // Middle of the left or right side
-          const toY = toRect.top + toRect.height / 2;   // Vertical center
-
-          // Ensure the calculation of positions is correct (no NaN)
-          if (isNaN(fromX) || isNaN(fromY) || isNaN(toX) || isNaN(toY)) {
-            console.error("Invalid connection coordinates:", { fromX, fromY, toX, toY });
-            return null; // Skip this connection if invalid
-          }
+          //Connection lines should start from the right side of the from box 
+          const fromX = fromBox.left + fromBox.width + 500;  // Right edge of the 'from' box
+          const fromY = fromBox.top + fromBox.height / 2 + 30;    // Vertical center of the 'from' box
+          
+          //Connection line ends at the left side of the 'to' box 
+          const toX = toBox.left + 450;
+          const toY = toBox.top + toBox.height / 2 + 30; //Vertical centre of the 'to' box 
 
           return (
             <line
@@ -180,7 +156,7 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
               y2={toY}
               stroke="red"
               strokeWidth="2"
-              markerEnd='url(#arrow)' //Use an arrow head to show current direction better?
+              
             />
           );
         })}
@@ -191,6 +167,9 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
         <DraggableBox 
           key={key} 
           id={key} 
+          title={boxes[key].title}
+          left={boxes[key].left}
+          top={boxes[key].top}
           {...boxes[key]} 
           onConnect = {handleConnect} 
         />

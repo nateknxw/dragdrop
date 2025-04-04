@@ -9,6 +9,9 @@ export class ComponentBase {
         this.nextId = ++currentId;
         this.prev = [];
         this.next = [];
+
+        this.height = 30;
+        this.width = 50;
     }
 
 

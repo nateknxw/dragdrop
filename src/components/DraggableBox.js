@@ -55,9 +55,9 @@ export const DraggableBox = memo(function DraggableBox(props) {
       style={getStyles(left, top, isDragging)}
       role="DraggableBox"
     >
-      <button onClick={() => onConnect(id)}> ◀️ </button>
+      <button onClick= {handleConnectClick}> ◀️ </button>
       <Box title={title} />
-      <button onClick={() => onConnect(id)}> ▶️ </button>
+      <button onClick={handleConnectClick}> ▶️ </button>
 
       
     </div>
