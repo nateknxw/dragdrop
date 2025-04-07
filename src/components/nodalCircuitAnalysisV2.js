@@ -1,37 +1,50 @@
 import * as math from 'mathjs';
-import React from 'react';
 
-
-//THIS FILE DOES NOT FULLY WORK
+// Accepts a map of components (linked list format)
 export const nodalAnalysis = (circuitLinkedList) => {
-  //Check if the circuit is parallel based on connections 
+  // Check if it's a parallel circuit
   const isParallel = () => {
-    let nodes = new Set();
-
-    //Iterate over the circuit components to check node connections 
-    for(let key in circuitLinkedList){
-        const component = circuitLinkedList[key];
-        nodes.add(component.prevId);
-        nodes.add(component.nextId);
+    const nodeMap = new Map();
+    for (let key in circuitLinkedList) {
+      const comp = circuitLinkedList[key];
+      if (!nodeMap.has(comp.prevId)) nodeMap.set(comp.prevId, []);
+      if (!nodeMap.has(comp.nextId)) nodeMap.set(comp.nextId, []);
+      nodeMap.get(comp.prevId).push(comp);
+      nodeMap.get(comp.nextId).push(comp);
     }
-
-    //If there are multiple nodes, the circuit is likely parallel 
-    return nodes.size > 2; 
+    return [...nodeMap.values()].some(arr => arr.length > 1); // Multiple components sharing a node
   };
 
-  //Perform nodal analysis 
-  const nodalAnalysis = () => {
-    if (isParallel()) {
-        //Do analysis here 
-        const result = "Analysis result if parallel circuit";
-        return result; 
-    }else {
-        //For series circuit will use Ohm's law and compute total resistance 
-        const totalResistance = Object.values(circuitLinkedList).reduce(
-            (acc, component) => acc + (component.resistance || 0 ),
-            0
-        );
-        return "Total resistance in the series circuit: ${totalResistance} Ohms. "
+  // Perform basic nodal analysis using G matrix
+  const solveNodal = () => {
+    const components = Object.values(circuitLinkedList);
+    const voltageSources = components.filter(c => c.title === "Battery");
+    const resistors = components.filter(c => c.resistance !== undefined);
+
+    if (voltageSources.length === 0) {
+      return "No voltage source found.";
     }
-  }
-}
+
+    const V = voltageSources[0].voltage; // Assume one voltage source
+    const R = resistors.map(r => r.resistance);
+    const N = resistors.length;
+
+    if (N === 0) return "No resistors found in the circuit.";
+
+    // Parallel resistors (simple model)
+    if (isParallel()) {
+      const totalReciprocal = R.reduce((sum, r) => sum + 1 / r, 0);
+      const totalResistance = 1 / totalReciprocal;
+      const totalCurrent = V / totalResistance;
+      return `Parallel Circuit:\nTotal Resistance: ${totalResistance.toFixed(2)} Ω\nTotal Current: ${totalCurrent.toFixed(2)} A`;
+    }
+
+    // Series circuit: total R = sum of R
+    const totalResistance = R.reduce((sum, r) => sum + r, 0);
+    const totalCurrent = V / totalResistance;
+    return `Series Circuit:\nTotal Resistance: ${totalResistance.toFixed(2)} Ω\nTotal Current: ${totalCurrent.toFixed(2)} A`;
+  };
+
+  // Call analysis
+  return solveNodal();
+};

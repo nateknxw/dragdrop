@@ -2,7 +2,7 @@
 export const parseCircuit = (components) => {
     let loop = [];
     let visited = new Set();
-    let start = 'a'; // Assuming 'a' (Battery) is the starting point
+    let start = 1; // Assuming 1 (Battery) is the starting point
   
     let currentId = start;
     while (!visited.has(currentId)) {

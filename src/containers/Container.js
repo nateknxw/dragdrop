@@ -13,11 +13,11 @@ import {Battery, Resistor, Lightbulb} from '../assets/ComponentBase'
 
 export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => {
   const [boxes, setBoxes] = useState({
-    a: new Battery(60, -300, 15),
-    b: new Lightbulb(100, -300, 10),
-    c: new Resistor(140, -300, 5),
-    d: new Resistor(140, -300, 5),
-    e: new Resistor(140, -300, 5),
+    1: new Battery(60, -300, 15),
+    2: new Lightbulb(100, -300, 10),
+    3: new Resistor(140, -300, 5),
+    4: new Resistor(140, -300, 5),
+    5: new Resistor(140, -300, 5),
     
     
   });
@@ -68,14 +68,35 @@ export const Container = ({circuitLinkedList, snapToGrid, onCircuitUpdate }) => 
       });
   
       setBoxes((prevBoxes) => {
+        const firstBox = prevBoxes[first];
+        const secondBox = prevBoxes[second];
+
         if (!prevBoxes[first] || !prevBoxes[second]) return prevBoxes; //  Prevent undefined errors
+
+        //Clone the class instances 
+        const updatedFirst = Object.assign(
+          Object.create(Object.getPrototypeOf(firstBox)),
+          firstBox
+        );
+        const updatedSecond = Object.assign(
+          Object.create(Object.getPrototypeOf(secondBox)),
+          secondBox
+        );
+        
+        //Append actual object reference to the arrays 
+        updatedFirst.next = [...updatedFirst.next, updatedSecond];
+        updatedSecond.prev = [...updatedSecond.prev, updatedFirst];
+
+        updatedFirst.nextId = second;
+        updatedSecond.prevId = first;
+
   
         console.log(" Updating Boxes:", first, second);
 
         const updatedBoxes = {
           ...prevBoxes,
-          [first]: { ...prevBoxes[first], nextId: second },
-          [second]: { ...prevBoxes[second], prevId: first },
+          [first]: updatedFirst,
+          [second]: updatedSecond,
         };
 
         // Call handleCircuitUpdate to update circuit state

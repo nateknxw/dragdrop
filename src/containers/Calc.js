@@ -30,8 +30,8 @@ const Calc = ({ circuitLinkedList }) => {
     
 
     //Latest attempt with the nodal 
-    //const nodalResult = nodalAnalysis(circuitLinkedList);
-    const nodalResult = "Not done yet"
+    const nodalResult = nodalAnalysis(circuitLinkedList);
+    //const nodalResult = "Not done yet"
     console.log("New Nodal analysis result: ", nodalResult)
 
     setResult({nodalResult, meshAnalysisResults});
@@ -41,7 +41,7 @@ const Calc = ({ circuitLinkedList }) => {
   
   useEffect(() => {
     console.log("Result State: ", result);
-    console.log("Mesh Analysis Results State: ", meshAnalysisResults);
+    
   }, [result, meshAnalysisResults]);
 
   return (
@@ -59,7 +59,7 @@ const Calc = ({ circuitLinkedList }) => {
             <p>Current: {result.meshAnalysisResults.current} A</p>
 
             <h3>Nodal Analysis Result</h3>
-            <pre>{JSON.stringify(result.nodalResult.nodeVoltages, null, 2)}</pre>
+            <p>{result.nodalResult}</p>
         </>
       )}
     </div>
